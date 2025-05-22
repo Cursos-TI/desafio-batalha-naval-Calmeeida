@@ -1,0 +1,139 @@
+#include <stdio.h>
+
+#define TAMANHO_TABULEIRO 10
+#define TAMANHO_NAVIO 3
+#define AGUA 0
+#define NAVIO 3
+
+void inicializarTabuleiro(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO]) {
+    for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
+        for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+            tabuleiro[i][j] = AGUA;
+        }
+    }
+}
+
+void exibirTabuleiro(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO]) {
+    printf("  "); 
+    for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+        printf("%d ", j); 
+    }
+    printf("\n");
+
+    for (int i = 0; i < TAMANHO_TABULEIRO; i++) {
+        printf("%d ", i); 
+        for (int j = 0; j < TAMANHO_TABULEIRO; j++) {
+            printf("%d ", tabuleiro[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+int posicionarNavio(int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO], int linhaInicial, int colunaInicial, char orientacao) {
+    if (linhaInicial < 0 || linhaInicial >= TAMANHO_TABULEIRO ||
+        colunaInicial < 0 || colunaInicial >= TAMANHO_TABULEIRO) {
+        printf("Erro: Coordenadas iniciais do navio fora do tabuleiro.\n");
+        return 0;
+    }
+
+    if (orientacao == 'H' || orientacao == 'h') {
+        if (colunaInicial + TAMANHO_NAVIO > TAMANHO_TABULEIRO) {
+            printf("Erro: Navio horizontal excede o limite do tabuleiro.\n");
+            return 0;
+        }
+        for (int j = 0; j < TAMANHO_NAVIO; j++) {
+            if (tabuleiro[linhaInicial][colunaInicial + j] == NAVIO) {
+                printf("Erro: Sobreposição de navios na posição (%d, %d).\n", linhaInicial, colunaInicial + j);
+                return 0;
+            }
+        }
+        for (int j = 0; j < TAMANHO_NAVIO; j++) {
+            tabuleiro[linhaInicial][colunaInicial + j] = NAVIO;
+        }
+        return 1;
+    }
+    else if (orientacao == 'V' || orientacao == 'v') {
+        if (linhaInicial + TAMANHO_NAVIO > TAMANHO_TABULEIRO) {
+            printf("Erro: Navio vertical excede o limite do tabuleiro.\n");
+            return 0;
+        }
+        for (int i = 0; i < TAMANHO_NAVIO; i++) {
+            if (tabuleiro[linhaInicial + i][colunaInicial] == NAVIO) {
+                printf("Erro: Sobreposição de navios na posição (%d, %d).\n", linhaInicial + i, colunaInicial);
+                return 0;
+            }
+        }
+        for (int i = 0; i < TAMANHO_NAVIO; i++) {
+            tabuleiro[linhaInicial + i][colunaInicial] = NAVIO;
+        }
+        return 1;
+    } else {
+        printf("Erro: Orientação inválida. Use 'H' para horizontal ou 'V' para vertical.\n");
+        return 0;
+    }
+}
+
+int main() {
+    int tabuleiro[TAMANHO_TABULEIRO][TAMANHO_TABULEIRO];
+
+    // --- 1. Inicializa o tabuleiro ---
+    inicializarTabuleiro(tabuleiro);
+    printf("Tabuleiro inicializado:\n");
+    exibirTabuleiro(tabuleiro);
+
+    // --- 2. Posiciona os Navios ---
+    // Navio 1: Horizontal
+    // As coordenadas (linha, coluna) e a orientação ('H' ou 'V') são fixadas no código.
+    // Você pode alterar esses valores para testar diferentes posições.
+    int linhaNavio1 = 0;
+    int colunaNavio1 = 0;
+    char orientacaoNavio1 = 'H';
+
+    printf("Tentando posicionar Navio 1 (horizontal) em (%d, %d)...\n", linhaNavio1, colunaNavio1);
+    if (posicionarNavio(tabuleiro, linhaNavio1, colunaNavio1, orientacaoNavio1)) {
+        printf("Navio 1 posicionado com sucesso!\n");
+    } else {
+        printf("Falha ao posicionar Navio 1.\n");
+    }
+    exibirTabuleiro(tabuleiro);
+
+
+    // Navio 2: Vertical
+    // Altere as coordenadas e a orientação para testar.
+    int linhaNavio2 = 2;
+    int colunaNavio2 = 2;
+    char orientacaoNavio2 = 'V';
+
+    printf("Tentando posicionar Navio 2 (vertical) em (%d, %d)...\n", linhaNavio2, colunaNavio2);
+    if (posicionarNavio(tabuleiro, linhaNavio2, colunaNavio2, orientacaoNavio2)) {
+        printf("Navio 2 posicionado com sucesso!\n");
+    } else {
+        printf("Falha ao posicionar Navio 2.\n");
+    }
+    exibirTabuleiro(tabuleiro);
+
+    // --- Testes de validação (exemplos que deveriam falhar) ---
+    // Teste 1: Navio horizontal fora do limite
+    printf("--- Teste de validação: Navio horizontal fora do limite ---\n");
+    if (!posicionarNavio(tabuleiro, 5, 8, 'H')) { // Coluna 8 + tamanho 3 = 11, excede 10
+        printf("Teste de navio horizontal fora do limite: SUCESSO (erro detectado).\n");
+    }
+    exibirTabuleiro(tabuleiro);
+
+    // Teste 2: Navio vertical fora do limite
+    printf("--- Teste de validação: Navio vertical fora do limite ---\n");
+    if (!posicionarNavio(tabuleiro, 8, 5, 'V')) { // Linha 8 + tamanho 3 = 11, excede 10
+        printf("Teste de navio vertical fora do limite: SUCESSO (erro detectado).\n");
+    }
+    exibirTabuleiro(tabuleiro);
+
+    // Teste 3: Sobreposição de navios
+    printf("--- Teste de validação: Sobreposição de navios ---\n");
+    if (!posicionarNavio(tabuleiro, 0, 1, 'H')) { // Tenta posicionar sobre o Navio 1
+        printf("Teste de sobreposição de navios: SUCESSO (erro detectado).\n");
+    }
+    exibirTabuleiro(tabuleiro);
+
+    return 0;
+}
